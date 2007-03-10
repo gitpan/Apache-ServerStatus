@@ -1,0 +1,87 @@
+NAME
+    Apache::ServerStatus - Simple module to parse apache's server-status.
+
+SYNOPSIS
+        use Apache::ServerStatus;
+
+        my $apss = new Apache::ServerStatus;
+
+        my $stat = $apss->get(request => 'http://localhost/server-status')
+           or die $apss->errstr();
+
+DESCRIPTION
+    This module parses the content of apache's server-status and countes the
+    current status by each process. It works nicely with apache versions 1.3
+    and 2.x.
+
+METHODS
+  new()
+    Call "new()" to create a new server status object.
+
+  get()
+    Call "get()" to get the parsed server status. This method returns a hash
+    reference with the counted status. There are diffenrent keys that
+    contains the following counts:
+
+       r    Requests currenty being processed
+       i    Idle workers
+       p    Parents
+       _    Waiting for Connection
+       S    Starting up
+       R    Reading Request
+       W    Sending Reply
+       K    Keepalive (read)
+       D    DNS Lookup
+       C    Closing connection
+       L    Logging
+       G    Gracefully finishing
+       I    Idle cleanup of worker
+       .    Open slot with no current process
+
+  errstr()
+    "errstr()" contains the error string if the requests fails.
+
+OPTIONS
+    You have to set all options by the call of "get()".
+
+    There are only two options: "request" and "timeout".
+
+    Set "request" with the complete uri like
+    "http://localhost/server-status". There is only http supported, not
+    https or other protocols.
+
+    Set "timeout" to define the time in seconds to abort the request if
+    there is no response. The default is set to 180 secondes if the options
+    isn't set.
+
+EXAMPLE CONFIGURATION FOR APACHE
+    This is just an example to activate the handler server-status for
+    localhost.
+
+        <Location /server-status>
+            SetHandler server-status
+            Order Deny,Allow
+            Deny from all
+            Allow from localhost
+        </Location>
+
+DEPENDENCIES
+        Carp
+        LWP::UserAgent
+        Params::Validate
+
+EXPORTS
+    No exports.
+
+REPORT BUGS
+    Please report all bugs to <jschulz.cpan(at)bloonix.de>.
+
+AUTHOR
+    Jonny Schulz <jschulz.cpan(at)bloonix.de>.
+
+COPYRIGHT
+    Copyright (C) 2007 by Jonny Schulz. All rights reserved.
+
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
